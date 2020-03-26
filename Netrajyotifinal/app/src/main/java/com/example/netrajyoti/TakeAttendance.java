@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Vibrator;
 import android.speech.tts.TextToSpeech;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,17 +40,21 @@ public class TakeAttendance extends AppCompatActivity implements
     static int count = 0;
     SharedPreferences sharedPreferences;
 
+    Button ttsButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_take_attendance);
+
+        ttsButton = findViewById(R.id.ttsButton);
+
         detector = new SimpleGestureFilter(TakeAttendance.this, this);
         username = findViewById(R.id.username);
         rollno = findViewById(R.id.rollno);
         sql = new SqliteHelper(this);
         mDatabase = openOrCreateDatabase(SqliteHelper.DATABASENAME, MODE_PRIVATE, null);
-        sharedPreferences = getSharedPreferences("MyPrefs",
-                Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         Intent checkTTSIntent = new Intent();
         checkTTSIntent.setAction(TextToSpeech.Engine.ACTION_CHECK_TTS_DATA);
         startActivityForResult(checkTTSIntent, MY_DATA_CHECK_CODE);
@@ -57,31 +62,27 @@ public class TakeAttendance extends AppCompatActivity implements
 
         fetchnames();
 
+        ttsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String speech = username.getText().toString();
+                speakWords(speech);
+            }
+        });
+
     }
 
-
-
     public void fetchnames() {
-
         Cursor cursor = mDatabase.rawQuery("SELECT * FROM STUDENTS where ID =" + x, null);
         if (cursor.moveToFirst()) {
-
-
             String id = cursor.getString(0);
-
             String name = cursor.getString(1);
             username.setText(name);
             rollno.setText(String.valueOf(id));
             x++;
-
-
-
-
-
         }
-
-
         cursor.close();
+        ttsButton.performClick();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -98,7 +99,6 @@ public class TakeAttendance extends AppCompatActivity implements
             case SimpleGestureFilter.SWIPE_LEFT:
                 swipeleft();
                 break;
-
 
         }
     //    Toast.makeText(this, showToastMessage, Toast.LENGTH_SHORT).show();
@@ -133,9 +133,6 @@ public class TakeAttendance extends AppCompatActivity implements
     }
 
 
-
-
-
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void swiperight() {
         String totalstudents = sharedPreferences.getString("totalstudent", null);
@@ -152,6 +149,13 @@ public class TakeAttendance extends AppCompatActivity implements
             count++;
         }
     }
+
+    private void speakWords(String speech) {
+        //speak straight away
+        //myTTS.setPitch(0.2f);
+        myTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
+    }
+
     public void onInit(int initStatus) {
 
         //check for successful instantiation
@@ -163,13 +167,7 @@ public class TakeAttendance extends AppCompatActivity implements
             Toast.makeText(this, "Sorry! Text To Speech failed...", Toast.LENGTH_LONG).show();
         }
     }
-    private void speakWords(String speech) {
 
-        //speak straight away
-        //myTTS.setPitch(0.2f);
-        myTTS.speak(speech, TextToSpeech.QUEUE_FLUSH, null);
-
-    }
 
     //act on result of TTS data check
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
