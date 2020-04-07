@@ -70,6 +70,7 @@ public class TakeAttendance extends AppCompatActivity implements
             }
         });
 
+
     }
 
     public void fetchnames() {
@@ -91,22 +92,19 @@ public class TakeAttendance extends AppCompatActivity implements
         String showToastMessage = "";
 
         switch (direction) {
-
             case SimpleGestureFilter.SWIPE_RIGHT:
                 swiperight();
-
                 break;
             case SimpleGestureFilter.SWIPE_LEFT:
                 swipeleft();
                 break;
-
         }
     //    Toast.makeText(this, showToastMessage, Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onDoubleTap() {
-
+            // Double Tab
     }
 
     @Override
@@ -115,7 +113,6 @@ public class TakeAttendance extends AppCompatActivity implements
         this.detector.onTouchEvent(me);
         return super.dispatchTouchEvent(me);
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void swipeleft() {
@@ -131,7 +128,6 @@ public class TakeAttendance extends AppCompatActivity implements
             count++;
         }
     }
-
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     public void swiperight() {
@@ -157,7 +153,6 @@ public class TakeAttendance extends AppCompatActivity implements
     }
 
     public void onInit(int initStatus) {
-
         //check for successful instantiation
         if (initStatus == TextToSpeech.SUCCESS) {
             if(myTTS.isLanguageAvailable(Locale.ENGLISH)==TextToSpeech.LANG_AVAILABLE)
@@ -168,10 +163,8 @@ public class TakeAttendance extends AppCompatActivity implements
         }
     }
 
-
     //act on result of TTS data check
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MY_DATA_CHECK_CODE) {
             if (resultCode == TextToSpeech.Engine.CHECK_VOICE_DATA_PASS) {
@@ -185,5 +178,4 @@ public class TakeAttendance extends AppCompatActivity implements
             }
         }
     }
-
 }
